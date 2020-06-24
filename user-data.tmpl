@@ -1,0 +1,50 @@
+#cloud-config
+# vim: syntax=yaml
+
+# Default login is ubuntu / ubuntu
+chpasswd:
+  expire: true
+  list:
+  - ubuntu:ubuntu
+
+# Disable SSH password auth
+ssh_pwauth: false
+# Regenerate host keys and provision with our key
+ssh_deletekeys: true
+disable_root: true
+ssh_authorized_keys:
+  - "${SSH_PUBKEY}"
+
+# Set time zone
+timezone: 'Americas/Los_Angeles'
+
+# Set hostname
+hostname: "${HOSTNAME}"
+
+# Update and upgrade packages and reboot if we gotta
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+autoinstall:
+  version: 1
+  identity:
+    hostname: "${HOSTNAME}"
+    # Default login is ubuntu / ubuntu
+    password: "$6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0"
+    username: ubuntu
+  ssh:
+    allow-pw: false
+    authorized-keys: ["${SSH_PUBKEY}"]
+    install-server: true
+  user-data:
+    ssh_deletekeys: true
+    disable_root: true
+
+    # Set time zone
+    timezone: 'Americas/Los_Angeles'
+
+    # Update and upgrade packages and reboot if we gotta
+    package_update: true
+    package_upgrade: true
+    package_reboot_if_required: true

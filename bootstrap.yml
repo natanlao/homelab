@@ -1,0 +1,114 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+
+  roles:
+    - role: jnv.unattended-upgrades
+      # Default ubuntu pattern is security only
+      unattended_mail_only_on_error: true
+      unattended_automatic_reboot: true
+      unattended_mail: replace-this@example.com
+
+    - role: geerlingguy.docker
+      docker_users:
+        - ubuntu
+      docker_install_compose: true
+      docker_service_state: started
+      docker_service_enabled: true
+      docker_restart_handler_state: restarted
+      docker_package_state: present
+      # For some reason, this isn't detected automatically; we manually specify
+      # the architecture here otherwise the install will fail.
+      docker_apt_arch: arm64
+      docker_apt_release_channel: stable
+
+  tasks:
+    - name: Update apt package cache
+      apt: update_cache=yes
+
+    - name: apt dist-upgrade
+      apt:
+        upgrade: dist
+
+    # Root and password SSH access should already be prohibited by cloud-init
+    - name: Prohibit root SSH access
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+      notify: restart ssh
+
+    - name: Prohibit SSH password auth
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+      notify: restart ssh
+
+    - name: Prohibit SSH challenge-response auth
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: '^ChallengeResponseAuthentication'
+        line: 'ChallengeResponseAuthentication no'
+        state: present
+      notify: restart ssh
+
+    - name: Install packages
+      apt:
+        pkg:
+          - ufw
+          - python3-pip
+
+    - name: Configure ufw to allow ssh
+      ufw:
+        rule: limit
+        port: '22'
+        proto: tcp
+
+    - name: Configure ufw for apps
+      ufw: rule=allow port={{ item }}
+      with_items:
+        # Refer to docker-compose.yml
+        - '3478'
+        - '10001'
+        - '8080'
+        - '8443'
+        - '53'
+        - '67'
+        - '80'
+        - '443'
+
+    - name: Enable ufw
+      ufw:
+        state: enabled
+        policy: deny
+
+    # Needed for the docker-compose task
+    - name: Install Docker bindings for Python
+      pip:
+        name:
+          - docker
+          - docker-compose
+
+    - name: Copy docker-compose.yml to pi
+      copy:
+        src: docker-compose.yml
+        dest: /home/ubuntu/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+        mode: 0644
+
+    - name: Provision containers
+      docker_compose:
+        project_src: /home/ubuntu
+        project_name: serv
+        state: present
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: ssh
+        state: restarted

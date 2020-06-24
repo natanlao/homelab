@@ -1,0 +1,3 @@
+hdmi_blanking=2
+dtoverlay=disable-wifi
+dtoverlay=disable-bt
