@@ -39,3 +39,20 @@ services:
     cap_add:
       - NET_ADMIN
     restart: always  # start on boot
+  sftp:
+    image: linuxserver/openssh-server:latest
+    container_name: sftp
+    environment:
+      TZ: 'America/Los_Angeles'
+      PUID: '1000'
+      PGID: '1000'
+      PASSWORD_ACCESS: 'false'
+      USER_NAME: 'backup'
+      PUBLIC_KEY_FILE: '/ssh/id_ed25519.pub'
+    volumes:
+      # Manual configuration of /etc/fstab is likely necessary
+      - "/media/backup:/home/backup/share"
+      - "/home/ubuntu/.ssh/:/ssh/:ro"
+    ports:
+      - "7742:2222/tcp"
+    restart: always

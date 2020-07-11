@@ -2,8 +2,9 @@
 
 This repository documents the configuration of my "homelab," which is really
 just a Raspberry Pi and a router. So not much of a homelab. I'm documenting it
-here so that if / when it breaks, it is not only possible to restore it, but
-hopefully easy.
+here so that if / when it breaks, I can restore it in a similar way, and because
+writing things out helps me understand what I'm doing and better navigate the
+decision-making process.
 
 
 ## Raspberry Pi
@@ -91,6 +92,35 @@ Once you're ready:
     $ ansible-playbook bootstrap.yml -i ${IP_ADDRESS_OF_PI}, -u ubuntu
 
 The trailing comma, I'm told, is important.
+
+
+### Services
+
+#### Pi-Hole
+
+The Pi-Hole install might choke on port 53 already being in use. This is because
+of dnsmasq, which runs by default on Ubuntu Server. It can be replaced with
+Pi-Hole's dnsmasq instance.
+
+#### Unifi Network Controller
+
+By default, the controller is limited to a gigabyte of memory. Given that the
+3B+ only has a gigabyte of memory, and that we're only managing a single device
+with this controller instance, I've found that it's acceptable to limit its
+consumption to 256M. It might be necessary to increase that limit if more
+devices are added.
+
+#### SFTP Server
+
+Some manual setup is required:
+* You'll need to manually configure /etc/fstab to automatically mount a
+  connected drive on boot.
+* If you don't have them already, you'll need SSH keys for the remote user.
+* There is only one configured user, `backup`. Add public keys using
+  `ssh-copy-id`.
+
+When configuring clients, remember to specify the backup destination as
+`/home/backup/share`.
 
 
 ### Notes
