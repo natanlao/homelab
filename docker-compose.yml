@@ -56,3 +56,9 @@ services:
     ports:
       - "7742:2222/tcp"
     restart: always
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: --schedule "9 6 * * *"

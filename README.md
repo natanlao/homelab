@@ -14,6 +14,7 @@ I use a Raspberry Pi 3B+ to host some network-accessible services:
 * UniFi Network Controller, for controlling my network hardware.
 * Pi-hole, for ad blocking.
 * An SFTP server, to expose an attached hard drive that I use for backups.
+* Watchtower, to automatically update all of the above
 
 These services run as Docker containers, specified in
 [docker-compose.yml](docker-compose.yml). I chose to use Docker for the
