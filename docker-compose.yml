@@ -9,7 +9,7 @@ services:
       - "PGID=1000"
       - "MEM_LIMIT=256M"
     volumes:
-      - "/unifi:/config"
+      - "./homelab/unifi-controller/config:/config"
     ports:
       - "3478:3478/udp"
       - "10001:10001/udp"
@@ -31,8 +31,8 @@ services:
       TZ: 'America/Los_Angeles'
       WEBPASSWORD: 'stupid-password'
     volumes:
-      - './etc-pihole/:/etc/pihole/'
-      - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+      - './homelab/pihole/etc-pihole/:/etc/pihole/'
+      - './homelab/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
     dns:
       - "127.0.0.1"
       - "1.1.1.1"
@@ -51,8 +51,9 @@ services:
       PUBLIC_KEY_FILE: '/ssh/id_ed25519.pub'
     volumes:
       # Manual configuration of /etc/fstab is likely necessary
-      - "/media/backup:/home/backup/share"
-      - "/home/ubuntu/.ssh/:/ssh/:ro"
+      - '/media/backup:/home/backup/share'
+      - '/home/ubuntu/.ssh/:/ssh/:ro'
+      - './homelab/openssh-server/config:/config'
     ports:
       - "7742:2222/tcp"
     restart: always

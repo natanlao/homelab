@@ -97,6 +97,11 @@ The trailing comma, I'm told, is important.
 
 ### Services
 
+Configuration for all of these servers is stored on the remote `homelab/`
+folder. In theory, you can provision another device using the process above,
+move the `homelab/` folder, and everything would run the same (with minimal
+manual tweaking).
+
 #### Pi-Hole
 
 The Pi-Hole install might choke on port 53 already being in use. This is because
