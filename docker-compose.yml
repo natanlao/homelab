@@ -13,14 +13,12 @@ services:
     ports:
       - "3478:3478/udp"
       - "10001:10001/udp"
-      - "8080:8080"
       - "8443:8443"
+      - "6789:6789/tcp"
     restart: always  # start on boot
-    privileged: true
   pihole:
     image: pihole/pihole:latest
     container_name: pihole
-    privileged: true
     ports:
       - "53:53/tcp"
       - "53:53/udp"
@@ -63,3 +61,4 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     command: --schedule "9 6 * * *"
+    restart: always

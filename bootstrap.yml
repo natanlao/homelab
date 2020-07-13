@@ -74,13 +74,13 @@
         # Refer to docker-compose.yml
         - '3478'
         - '10001'
-        - '8080'
         - '8443'
         - '53'
         - '67'
         - '80'
         - '443'
         - '7742'
+        - '6789'
 
     - name: Enable ufw
       ufw:
@@ -101,6 +101,11 @@
         owner: ubuntu
         group: ubuntu
         mode: 0644
+
+    - name: Stop all services
+      docker_compose:
+        project_src: /home/ubuntu
+        stopped: yes
 
     - name: Provision containers
       docker_compose:
