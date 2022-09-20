@@ -1,3 +1,5 @@
+Deprecated in favor of https://github.com/natanlao/dotfiles
+
 # homelab
 
 This repository documents the configuration of my "homelab," which is really
